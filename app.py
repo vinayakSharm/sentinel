@@ -9,6 +9,8 @@ import time
 from io import BytesIO
 import threading
 import queue
+import os
+import tempfile
 from datetime import datetime
 
 # Set page config to wide mode
@@ -63,9 +65,14 @@ def load_processor():
 def get_video_source(source_type, source_path=None):
     if source_type == "Webcam":
         return cv2.VideoCapture(0)
-    elif source_type == "Video File":
-        return cv2.VideoCapture(source_path)
-    elif source_type == "RTSP Stream":
+    elif source_type == "Video File" and source_path:
+        # Create a temporary file
+        temp_dir = tempfile.gettempdir()
+        temp_path = os.path.join(temp_dir, 'temp_video.mp4')
+        with open(temp_path, 'wb') as f:
+            f.write(source_path.getvalue())
+        return cv2.VideoCapture(temp_path)
+    elif source_type == "RTSP Stream" and source_path:
         return cv2.VideoCapture(source_path)
     return None
 
@@ -126,12 +133,11 @@ def main():
         )
         
         source_path = None
+        uploaded_file = None
         if source_type == "Video File":
-            source_file = st.file_uploader("Choose a video file", type=['mp4', 'avi', 'mov'])
-            if source_file:
-                # Save the uploaded file temporarily
-                temp_file = BytesIO(source_file.read())
-                source_path = temp_file
+            uploaded_file = st.file_uploader("Choose a video file", type=['mp4', 'avi', 'mov'])
+            if uploaded_file:
+                source_path = BytesIO(uploaded_file.getvalue())
         elif source_type == "RTSP Stream":
             source_path = st.text_input("Enter RTSP URL", placeholder="rtsp://your-camera-url")
 
