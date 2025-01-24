@@ -2,6 +2,7 @@
 
 An advanced AI-powered video surveillance and analysis system that provides automated monitoring, visual Q&A, and real-time video captioning capabilities for CCTV cameras and video feeds.
 
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://securade-sentinel.streamlit.app/)
 [![Open in Spaces](https://huggingface.co/datasets/huggingface/badges/resolve/main/open-in-hf-spaces-sm.svg)](https://huggingface.co/spaces/codelion/sentinel)
 
 ## Features
