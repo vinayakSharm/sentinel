@@ -14,7 +14,6 @@ An advanced AI-powered video surveillance and analysis system that provides auto
 - Natural language visual Q&A using VILT model
 - Interactive Streamlit interface
 - Continuous monitoring and analysis
-- Screenshot capture and analysis
 
 ## Installation
 
