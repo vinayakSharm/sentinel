@@ -23,6 +23,7 @@ def initialize_state():
         st.session_state.caption_queue = queue.Queue(maxsize=10)
         st.session_state.processor = None
         st.session_state.thread = None
+        st.session_state.is_streaming = False
         st.session_state.initialized = True
 
 @st.cache_resource
@@ -134,15 +135,19 @@ def main():
         elif source_type == "RTSP Stream":
             source_path = st.text_input("Enter RTSP URL", placeholder="rtsp://your-camera-url")
 
-        start_stop = st.button("Start/Stop Surveillance")
+        start_stop = st.button(
+            "Start Surveillance" if not st.session_state.is_streaming else "Stop Surveillance"
+        )
         video_placeholder = st.empty()
         
         if start_stop:
-            if st.session_state.stop_event.is_set():
+            if not st.session_state.is_streaming:
                 # Start surveillance
                 if st.session_state.processor is None:
                     st.session_state.processor = load_processor()
                 st.session_state.stop_event.clear()
+                st.session_state.frame_queue = queue.Queue(maxsize=1)
+                st.session_state.caption_queue = queue.Queue(maxsize=10)
                 st.session_state.thread = threading.Thread(
                     target=process_video,
                     args=(
@@ -156,12 +161,14 @@ def main():
                     daemon=True
                 )
                 st.session_state.thread.start()
+                st.session_state.is_streaming = True
             else:
                 # Stop surveillance
                 st.session_state.stop_event.set()
                 if st.session_state.thread:
                     st.session_state.thread.join(timeout=1.0)
                 st.session_state.frame = None
+                st.session_state.is_streaming = False
                 video_placeholder.empty()
 
     # Caption column
@@ -182,7 +189,7 @@ def main():
             answer_placeholder.markdown(f"**Answer:** {answer}")
 
     # Update loop
-    if not st.session_state.stop_event.is_set():
+    if st.session_state.is_streaming:
         placeholder = st.empty()
         while True:
             try:
