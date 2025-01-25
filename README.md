@@ -1,4 +1,4 @@
-# Securade.ai Sentinel
+# Sentinel
 
 An advanced AI-powered video surveillance and analysis system that provides automated monitoring, visual Q&A, and real-time video captioning capabilities for CCTV cameras and video feeds.
 
